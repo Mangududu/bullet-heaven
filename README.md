@@ -1,2 +1,2 @@
 # bullet-heaven
-Bullet heaven game produced using Pygame, VScode and Github Copilot/ChatGPT
+Bullet heaven game created using Pygame, VScode and Github Copilot/ChatGPT
