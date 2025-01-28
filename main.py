@@ -1,21 +1,25 @@
+# main.py
+
 import pygame
-from constants import *
+
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, BLACK
 from character import Player
-from enemy import Enemy
 from world import World
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Bullet Heaven Example")
+    
     clock = pygame.time.Clock()
     running = True
-    
-    # Create player, enemies, world, etc.
+
+    # Create player, world, etc.
     player = Player()
     world = World()
 
     while running:
-        dt = clock.tick(FPS) / 1000.0  # Delta time in seconds
+        dt = clock.tick(FPS) / 1000.0  # delta time in seconds
         
         # Handle events
         for event in pygame.event.get():
@@ -29,7 +33,7 @@ def main():
         # Render
         screen.fill(BLACK)
         world.draw(screen)
-        player.draw(screen)
+        player.draw(screen)  # or if you have a sprite group, group.draw(screen)
         
         pygame.display.flip()
     
@@ -37,3 +41,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -1,59 +1,75 @@
+# world.py
+
 import pygame
-from constants import *
-from enemy import Enemy
+import random
+
+from constants import (
+    SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE,
+    WORLD_WIDTH, WORLD_HEIGHT, BLACK
+)
 
 class World:
     def __init__(self):
-        self.current_stage = 1
-        self.enemies = pygame.sprite.Group()
-        self.projectiles = pygame.sprite.Group()
+        # Load your grass tile
+        self.grass_tile = pygame.image.load("assets/images/backgrounds/grass_tile.png").convert_alpha()
         
-        # Track wave info
-        self.wave_number = 1
-        self.wave_timer = 0
-        self.wave_cooldown = 3000  # 3 seconds between waves
-
-        # Load backgrounds
-        self.background_stage1 = pygame.image.load("assets/images/backgrounds/stage1.png").convert()
+        # If you have multiple tile variations, you can store them in a list:
+        # self.grass_tiles = [
+        #     pygame.image.load("assets/images/backgrounds/grass_tile1.png").convert_alpha(),
+        #     pygame.image.load("assets/images/backgrounds/grass_tile2.png").convert_alpha()
+        # ]
+        
+        # For demonstration, we'll keep it super simple: just one grass tile.
+        
+        # Camera position
+        self.camera_x = 0
+        self.camera_y = 0
 
     def update(self, dt, player):
-        # Spawn waves if needed
-        self.wave_timer += dt * 1000
-        if self.wave_timer >= self.wave_cooldown:
-            self.wave_timer = 0
-            self.spawn_wave(self.wave_number)
-            self.wave_number += 1
+        """
+        We'll just keep the camera centered on the player for now.
+        """
+        # Center camera on player's center
+        self.camera_x = player.rect.centerx - SCREEN_WIDTH // 2
+        self.camera_y = player.rect.centery - SCREEN_HEIGHT // 2
         
-        # Update enemies
-        for enemy in self.enemies:
-            enemy.update(dt, player)
-        
-        # Update projectiles
-        for projectile in self.projectiles:
-            projectile.update(dt, self.enemies)
-        
-        # Check if stage should change (e.g., if wave_number passes a certain threshold)
-        # ...
-    
-    def draw(self, surface):
-        # Draw background
-        surface.blit(self.background_stage1, (0, 0))
-        
-        # Draw enemies
-        for enemy in self.enemies:
-            enemy.draw(surface)
-        
-        # Draw projectiles
-        for projectile in self.projectiles:
-            projectile.draw(surface)
+        # Optional: clamp camera if you have a finite map
+        max_camera_x = WORLD_WIDTH * TILE_SIZE - SCREEN_WIDTH
+        max_camera_y = WORLD_HEIGHT * TILE_SIZE - SCREEN_HEIGHT
+        # Make sure we don't scroll beyond the world edges:
+        if self.camera_x < 0:
+            self.camera_x = 0
+        if self.camera_y < 0:
+            self.camera_y = 0
+        if self.camera_x > max_camera_x:
+            self.camera_x = max_camera_x
+        if self.camera_y > max_camera_y:
+            self.camera_y = max_camera_y
 
-    def spawn_wave(self, wave_number):
-        # Example: spawn 5 enemies at random positions
-        import random
-        for i in range(5 + wave_number):
-            x = random.randint(0, SCREEN_WIDTH)
-            y = random.randint(0, SCREEN_HEIGHT)
-            self.enemies.add(Enemy(x, y))
+    def draw(self, surface):
+        """
+        Draw only the visible tiles within the camera's viewport.
+        """
+        # Determine which part of the map is visible
+        start_col = self.camera_x // TILE_SIZE
+        end_col = (self.camera_x + SCREEN_WIDTH) // TILE_SIZE + 1
+        start_row = self.camera_y // TILE_SIZE
+        end_row = (self.camera_y + SCREEN_HEIGHT) // TILE_SIZE + 1
         
-    def add_projectile(self, projectile):
-        self.projectiles.add(projectile)
+        # Clamp to our world size
+        end_col = min(end_col, WORLD_WIDTH)
+        end_row = min(end_row, WORLD_HEIGHT)
+
+        for row in range(start_row, end_row):
+            for col in range(start_col, end_col):
+                # Calculate the tile's world x/y
+                world_x = col * TILE_SIZE
+                world_y = row * TILE_SIZE
+                
+                # Convert to screen coordinates using camera offset
+                screen_x = world_x - self.camera_x
+                screen_y = world_y - self.camera_y
+                
+                # Blit the grass tile
+                surface.blit(self.grass_tile, (screen_x, screen_y))
+
