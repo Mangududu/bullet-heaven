@@ -4,14 +4,14 @@ import pygame
 import random
 
 from constants import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE,
+    SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, TILE_HEIGHT,
     WORLD_WIDTH, WORLD_HEIGHT, BLACK
 )
 
 class World:
     def __init__(self):
         # Load your grass tile
-        self.grass_tile = pygame.image.load("assets/images/backgrounds/grass_tile.png").convert_alpha()
+        self.grass_tile = pygame.image.load("assets/images/backgrounds/Grass_Middle.png").convert_alpha()
         
         # If you have multiple tile variations, you can store them in a list:
         # self.grass_tiles = [
@@ -34,8 +34,8 @@ class World:
         self.camera_y = player.rect.centery - SCREEN_HEIGHT // 2
         
         # Optional: clamp camera if you have a finite map
-        max_camera_x = WORLD_WIDTH * TILE_SIZE - SCREEN_WIDTH
-        max_camera_y = WORLD_HEIGHT * TILE_SIZE - SCREEN_HEIGHT
+        max_camera_x = WORLD_WIDTH * TILE_WIDTH - SCREEN_WIDTH
+        max_camera_y = WORLD_HEIGHT * TILE_HEIGHT - SCREEN_HEIGHT
         # Make sure we don't scroll beyond the world edges:
         if self.camera_x < 0:
             self.camera_x = 0
@@ -51,10 +51,10 @@ class World:
         Draw only the visible tiles within the camera's viewport.
         """
         # Determine which part of the map is visible
-        start_col = self.camera_x // TILE_SIZE
-        end_col = (self.camera_x + SCREEN_WIDTH) // TILE_SIZE + 1
-        start_row = self.camera_y // TILE_SIZE
-        end_row = (self.camera_y + SCREEN_HEIGHT) // TILE_SIZE + 1
+        start_col = self.camera_x // TILE_WIDTH
+        end_col = (self.camera_x + SCREEN_WIDTH) // TILE_WIDTH + 1
+        start_row = self.camera_y // TILE_HEIGHT
+        end_row = (self.camera_y + SCREEN_HEIGHT) // TILE_WIDTH + 1
         
         # Clamp to our world size
         end_col = min(end_col, WORLD_WIDTH)
@@ -63,8 +63,8 @@ class World:
         for row in range(start_row, end_row):
             for col in range(start_col, end_col):
                 # Calculate the tile's world x/y
-                world_x = col * TILE_SIZE
-                world_y = row * TILE_SIZE
+                world_x = col * TILE_WIDTH
+                world_y = row * TILE_HEIGHT
                 
                 # Convert to screen coordinates using camera offset
                 screen_x = world_x - self.camera_x

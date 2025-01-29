@@ -5,7 +5,8 @@ SCREEN_HEIGHT = 600
 FPS = 60
 
 # For our tile-based map:
-TILE_SIZE = 17
+TILE_WIDTH = 16
+TILE_HEIGHT = 16
 WORLD_WIDTH = 100   # number of tiles horizontally
 WORLD_HEIGHT = 100  # number of tiles vertically
 

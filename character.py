@@ -6,10 +6,17 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        # Load the player sprite sheet (e.g., 4 frames in a row).
-        self.sprite_sheet = pygame.image.load("assets/images/player/player.png").convert_alpha()
-        
         # Adjust these numbers based on how your sprite sheet is arranged:
+        self.frame_width = 32
+        self.frame_height = 32
+        self.num_frames = 4  # Suppose we have 4 frames horizontally in the sheet
+
+        # Load the player sprite sheet (e.g., 4 frames in a row).
+        try:
+            self.sprite_sheet = pygame.image.load("assets/images/player/player.png").convert_alpha()
+        except pygame.error as e:
+            print(f"Unable to load sprite sheet image: {e}")
+            self.sprite_sheet = pygame.Surface((self.frame_width, self.frame_height))  # Create a blank surface as a placeholder
         self.frame_width = 32
         self.frame_height = 32
         self.num_frames = 4  # Suppose we have 4 frames horizontally in the sheet
